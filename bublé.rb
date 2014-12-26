@@ -76,30 +76,29 @@ def requested_file(request_path)
 
 end
 
-server = TCPServer.new 'localhost', 5678
+def run_application
+	server = TCPServer.new 'localhost', 5678
+	puts "Michael Bublé is recording another Christmas album on port 5678..."
 
-puts "Michael Bublé is recording another Christmas album on port 5678..."
+	loop do
+		socket 				= server.accept
+		request_line 	= socket.gets
 
-loop do
+		STDERR.puts request_line
 
-	socket 				= server.accept
-	request_line 	= socket.gets
+		request_method = request_line.scan(/\w+/).first
 
-	STDERR.puts request_line
+		data = socket.readpartial(1024).split("\r\n\r\n")
 
-	request_method = request_line.scan(/\w+/).first
+		header 	= data.first
+		body 	= data.last
 
-	data = socket.readpartial(1024).split("\r\n\r\n")
+		request_path		= request_line.split(" ")[1]
 
-	header 	= data.first
-	body 		= data.last
+		handler = @routes.find {|route| (route[:method] == request_method) && (route[:path] == request_path)  }
 
-	request_path		= request_line.split(" ")[1]
+		handler ? socket.print(handler[:action].call) : socket.print(four_oh_four)
 
-	handler = @routes.find {|route| (route[:method] == request_method) && (route[:path] == request_path)  }
-
-	handler ? socket.print(handler[:action].call) : socket.print(four_oh_four)
-
-	socket.close
-
+		socket.close
+	end
 end
