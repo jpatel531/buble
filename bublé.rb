@@ -15,12 +15,16 @@ DEFAULT_CONTENT_TYPE = 'application/octet-stream'
 
 @routes ||= []
 
-def get(path, &block)
-	@routes << {
-		method: 'GET',
-		path: path,
-		action: block
-	}
+def get(path, &block) 
+	http_method('GET', path, &block)
+end
+
+def post(path, &block)
+	http_method('POST', path, &block) 
+end
+
+def http_method(method, path, &block)
+	@routes << {method: method, path: path, action: block}
 end
 
 def html(path)
@@ -38,11 +42,6 @@ def html(path)
 	else
 		return four_oh_four
 	end
-end
-
-
-get '/' do 
-	html :index
 end
 
 def four_oh_four
