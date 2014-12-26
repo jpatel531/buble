@@ -13,14 +13,56 @@ CONTENT_TYPE_MAPPING = {
 
 DEFAULT_CONTENT_TYPE = 'application/octet-stream'
 
+@routes ||= []
+
+def get(path, &block)
+	@routes << {
+		method: 'GET',
+		path: path,
+		action: block
+	}
+end
+
+def html(path)
+	path = requested_file(path.to_s + ".html")
+
+	if File.exist?(path) && !File.directory?(path)
+		File.open(path, "rb") do |file|
+			return  "HTTP/1.1 200 OK\r\n" +
+			"Content-Type: #{content_type(file)}\r\n" +
+			"Content-Length: #{file.size}\r\n" +
+			"Connection: close\r\n" + 
+			"\r\n" +
+			IO.read(file)
+		end
+	else
+		return four_oh_four
+	end
+end
+
+
+get '/' do 
+	html :index
+end
+
+def four_oh_four
+	message = "File not found\n"
+
+	return "HTTP/1.1 404 Not Found\r\n" +
+		"Content-Type text/plain\r\n" +
+		"Content-Length: #{message.size}\r\n" +
+		"Connection: close\r\n" +
+		"\r\n" +
+		message
+end
+
 def content_type(path)
 	ext = File.extname(path).split(".").last
 	CONTENT_TYPE_MAPPING.fetch(ext.to_sym, DEFAULT_CONTENT_TYPE)
 end
 
-def requested_file(request_line)
-	request_uri		= request_line.split(" ")[1]
-	path 					= URI.unescape(URI(request_uri).path)
+def requested_file(request_path)
+	path 					= URI.unescape(URI(request_path).path)
 
 	clean = []
 	parts = path.split("/")
@@ -34,7 +76,9 @@ def requested_file(request_line)
 
 end
 
-server = TCPServer.new 'localhost', 2345
+server = TCPServer.new 'localhost', 5678
+
+puts "Michael Bublé is recording another Christmas album on port 5678..."
 
 loop do
 
@@ -45,39 +89,16 @@ loop do
 
 	request_method = request_line.scan(/\w+/).first
 
-	puts request_method
-
 	data = socket.readpartial(1024).split("\r\n\r\n")
 
 	header 	= data.first
 	body 		= data.last
 
-	path = requested_file(request_line)
+	request_path		= request_line.split(" ")[1]
 
-	path = File.join(path, 'index.html') if File.directory?(path)
+	handler = @routes.find {|route| (route[:method] == request_method) && (route[:path] == request_path)  }
 
-	if File.exist?(path) && !File.directory?(path)
-		File.open(path, "rb") do |file|
-			socket.print "HTTP/1.1 200 OK\r\n" +
-			"Content-Type: #{content_type(file)}\r\n" +
-			"Content-Length: #{file.size}\r\n" +
-			"Connection: close\r\n"
-
-
-			socket.print "\r\n"
-
-			IO.copy_stream(file,socket)
-		end
-	else
-		message = "File not found \n"
-
-		socket.print "HTTP/1.1 404 Not Found\r\n" +
-			"Content-Type text/plain\r\n" +
-			"Content-Length: #{message.size}\r\n" +
-			"Connection: close\r\n"
-
-		socket.print message
-	end
+	handler ? socket.print(handler[:action].call) : socket.print(four_oh_four)
 
 	socket.close
 
