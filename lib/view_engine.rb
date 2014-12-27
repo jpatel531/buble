@@ -3,7 +3,7 @@ module Bublé
 
 		def html(path)
 			path = requested_file(path.to_s + ".html")
-
+			puts path
 			if File.exist?(path) && !File.directory?(path)
 				File.open(path, "rb") do |file|
 					return  "HTTP/1.1 200 OK\r\n" +

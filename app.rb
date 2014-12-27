@@ -1,7 +1,11 @@
-require_relative 'bublé'
+require './lib/bublé'
 
 get '/' do
 	html :index
+end
+
+get '/query_test' do 
+	params.inspect
 end
 
 post '/test' do
