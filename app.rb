@@ -5,7 +5,8 @@ get '/' do
 end
 
 post '/test' do
-	{success:200}.to_json
+	params = JSON.parse(body)
+	"You sent me #{params.keys}, with the values #{params.values}"
 end
 
 run_application
