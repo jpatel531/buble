@@ -1,8 +1,15 @@
 require 'socket'
 require 'uri'
 require 'json'
+require_relative 'route_register'
+require_relative 'view_engine'
+require_relative 'error_handler'
 
 module Bublé
+
+	include Bublé::RouteRegister
+	include Bublé::ViewEngine
+	include Bublé::ErrorHandler
 
 	WEB_ROOT = './public'
 
@@ -15,51 +22,7 @@ module Bublé
 
 	DEFAULT_CONTENT_TYPE = 'application/octet-stream'
 
-	attr_accessor :routes, :header, :body
-
-	def routes
-		@routes ||= []
-	end
-
-	def get(path, &block) 
-		http_method('GET', path, &block)
-	end
-
-	def post(path, &block)
-		http_method('POST', path, &block) 
-	end
-
-	def http_method(method, path, &block)
-		routes << {method: method, path: path, action: block}
-	end
-
-	def html(path)
-		path = requested_file(path.to_s + ".html")
-
-		if File.exist?(path) && !File.directory?(path)
-			File.open(path, "rb") do |file|
-				return  "HTTP/1.1 200 OK\r\n" +
-				"Content-Type: #{content_type(file)}\r\n" +
-				"Content-Length: #{file.size}\r\n" +
-				"Connection: close\r\n" + 
-				"\r\n" +
-				IO.read(file)
-			end
-		else
-			return four_oh_four
-		end
-	end
-
-	def four_oh_four
-		message = "File not found\n"
-
-		return "HTTP/1.1 404 Not Found\r\n" +
-			"Content-Type text/plain\r\n" +
-			"Content-Length: #{message.size}\r\n" +
-			"Connection: close\r\n" +
-			"\r\n" +
-			message
-	end
+	attr_accessor :header, :body
 
 	def content_type(path)
 		ext = File.extname(path).split(".").last
@@ -67,7 +30,7 @@ module Bublé
 	end
 
 	def requested_file(request_path)
-		path 					= URI.unescape(URI(request_path).path)
+		path = URI.unescape(URI(request_path).path)
 
 		clean = []
 		parts = path.split("/")
@@ -78,7 +41,6 @@ module Bublé
 		end
 
 		File.join(WEB_ROOT, *clean)
-
 	end
 
 	def run_application
@@ -91,14 +53,16 @@ module Bublé
 
 			STDERR.puts request_line
 
+			next if !request_line
+
 			request_method = request_line.scan(/\w+/).first
 
 			data = socket.readpartial(1024).split("\r\n\r\n")
 
 			@header 	= data.first
-			@body 	= data.last
+			@body 		= data.last
 
-			request_path		= request_line.split(" ")[1]
+			request_path = request_line.split(" ")[1]
 
 			handler = @routes.find {|route| (route[:method] == request_method) && (route[:path] == request_path)  }
 
