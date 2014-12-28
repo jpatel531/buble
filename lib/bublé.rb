@@ -36,6 +36,7 @@ module Bublé
 				(route[:path] == request_path ||
 
 					route[:route_params_regex] &&
+					route[:path].split("/").length == request_path.split("/").length &&
 					(route[:route_params_regex] =~ request_path)
 
 				)

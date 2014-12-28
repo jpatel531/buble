@@ -44,13 +44,12 @@ module Bublé
 			@route_params ||= {}
 
 			if @handler[:route_params_regex]
-				route_param_key = /:\w+/.match(@handler[:path])[0].delete(":")
+				param_matches = request_path.scan(@handler[:route_params_regex]).flatten
+				
+				@handler[:route_params_names].each_with_index do |name, index|
+					@route_params[name.to_sym] = param_matches[index]
 
-				route_param_value = @handler[:route_params_regex].match(request_path).captures[0]
-
-				@route_params[route_param_key.to_sym] = route_param_value
-
-
+				end
 			end
 		end
 

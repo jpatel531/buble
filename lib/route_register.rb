@@ -20,12 +20,18 @@ module Bublé
 			route = {method: method, path: path, action: block}
 
 			if path =~ /:\w+/
-				# /:\w+/.match(path).to_a.each do |match|
-				# 	new_path = path.gsub(match, '(\w+)')
-				# end
 
-				route_param = /:\w+/.match(path)[0]
-				route[:route_params_regex] = Regexp.new(path.gsub(route_param, '(\w+)'))
+				route_params = path.scan(/:\w+/)
+
+				positions = route_params.map {|param| path.split("/").index(param)}
+
+				regex_string = path
+
+				route_params.each { |param| regex_string.gsub!(param, '(\w+)') }
+
+				route[:route_params_regex] = Regexp.new(regex_string)
+				route[:route_params_names] = route_params.map {|param| param.delete(":")}
+
 			end
 
 			routes << route
