@@ -22,9 +22,11 @@ module Bublé
 			socket = server.accept
 
 			request_line = socket.gets
-			request = socket.readpartial(1024).split("\r\n\r\n")
 
 			next if !request_line
+
+			request = socket.readpartial(1024).split("\r\n\r\n")
+
 
 			parse(request, request_line)
 
@@ -46,7 +48,9 @@ module Bublé
 
 			handler ? socket.print(handler[:action].call) : socket.print(four_oh_four)
 
+
 			socket.close
+
 		end		
 	end
 end

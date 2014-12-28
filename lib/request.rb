@@ -41,14 +41,13 @@ module Bublé
 
 		def parse_route_params
 
-			@route_params ||= {}
+			@route_params = {}
 
 			if @handler[:route_params_regex]
 				param_matches = request_path.scan(@handler[:route_params_regex]).flatten
 				
 				@handler[:route_params_names].each_with_index do |name, index|
 					@route_params[name.to_sym] = param_matches[index]
-
 				end
 			end
 		end
@@ -56,7 +55,6 @@ module Bublé
 		def params
 			@params = @body_params.merge(@query_params).merge(@route_params)
 		end
-
 
 	end
 
