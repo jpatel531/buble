@@ -1,5 +1,4 @@
 module Bublé
-
 	module RouteRegister
 
 		attr_accessor :routes
@@ -20,5 +19,4 @@ module Bublé
 			routes << {method: method, path: path, action: block}
 		end
 	end
-
 end

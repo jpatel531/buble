@@ -3,46 +3,16 @@ require 'uri'
 require 'cgi'
 require 'json'
 require_relative 'route_register'
-require_relative 'view_engine'
+require_relative 'response'
 require_relative 'error_handler'
 require_relative 'request'
 
 module Bublé
 
 	include Bublé::RouteRegister
-	include Bublé::ViewEngine
+	include Bublé::Response
 	include Bublé::ErrorHandler
 	include Bublé::Request
-
-	WEB_ROOT = './public'
-
-	CONTENT_TYPE_MAPPING = {
-		html: 'text/html',
-		txt: 'text/plain',
-		png: 'image/png',
-		jpg: 'image/jpeg'
-	}
-
-	DEFAULT_CONTENT_TYPE = 'application/octet-stream'
-
-	def content_type(path)
-		ext = File.extname(path).split(".").last
-		CONTENT_TYPE_MAPPING.fetch(ext.to_sym, DEFAULT_CONTENT_TYPE)
-	end
-
-	def requested_file(request_path)
-		path = URI.unescape(URI(request_path).path)
-
-		clean = []
-		parts = path.split("/")
-
-		parts.each do |part|
-			next if part.empty? || part == "."
-			part == ".." ? clean.pop : clean << part
-		end
-
-		File.join(WEB_ROOT, *clean)
-	end
 
 	def run_application
 		server = TCPServer.new 'localhost', 5678
