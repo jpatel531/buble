@@ -5,12 +5,14 @@ require 'json'
 require_relative 'route_register'
 require_relative 'view_engine'
 require_relative 'error_handler'
+require_relative 'request'
 
 module Bublé
 
 	include Bublé::RouteRegister
 	include Bublé::ViewEngine
 	include Bublé::ErrorHandler
+	include Bublé::Request
 
 	WEB_ROOT = './public'
 
@@ -22,8 +24,6 @@ module Bublé
 	}
 
 	DEFAULT_CONTENT_TYPE = 'application/octet-stream'
-
-	attr_accessor :header, :body, :params
 
 	def content_type(path)
 		ext = File.extname(path).split(".").last
@@ -50,24 +50,15 @@ module Bublé
 
 		loop do
 			socket = server.accept
+
 			request_line = socket.gets
+			request = socket.readpartial(1024).split("\r\n\r\n")
+
+			next if !request_line
+
+			parse(request, request_line)
 
 			STDERR.puts request_line
-
-			break if !request_line
-
-			request_method = request_line.scan(/\w+/).first
-
-			data = socket.readpartial(1024).split("\r\n\r\n")
-
-			@header = data.first
-			@body = data.last
-
-			raw_uri = request_line.split(" ")[1]
-			parsed_uri = URI.parse(raw_uri)
-
-			request_path = parsed_uri.path
-			@params = CGI.parse parsed_uri.query if parsed_uri.query
 
 			handler = @routes.find {|route| (route[:method] == request_method) && (route[:path] == request_path)  }
 

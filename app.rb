@@ -9,7 +9,6 @@ get '/query_test' do
 end
 
 post '/test' do
-	params = JSON.parse(body)
 	"You sent me #{params.keys}, with the values #{params.values}"
 end
 
