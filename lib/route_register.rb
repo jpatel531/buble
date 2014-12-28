@@ -16,7 +16,19 @@ module Bublé
 		end
 
 		def register_action(method, path, &block)
-			routes << {method: method, path: path, action: block}
+
+			route = {method: method, path: path, action: block}
+
+			if path =~ /:\w+/
+				# /:\w+/.match(path).to_a.each do |match|
+				# 	new_path = path.gsub(match, '(\w+)')
+				# end
+
+				route_param = /:\w+/.match(path)[0]
+				route[:route_params_regex] = Regexp.new(path.gsub(route_param, '(\w+)'))
+			end
+
+			routes << route
 		end
 	end
 end

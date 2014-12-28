@@ -30,7 +30,18 @@ module Bublé
 
 			STDERR.puts request_line
 
-			handler = @routes.find {|route| (route[:method] == request_method) && (route[:path] == request_path)  }
+			handler = @handler = @routes.find do |route| 
+
+				route[:method] == request_method && 
+				(route[:path] == request_path ||
+
+					route[:route_params_regex] &&
+					(route[:route_params_regex] =~ request_path)
+
+				)
+			end
+
+			parse_route_params
 
 			handler ? socket.print(handler[:action].call) : socket.print(four_oh_four)
 

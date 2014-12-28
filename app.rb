@@ -13,7 +13,11 @@ post '/test' do
 end
 
 get '/route/:test' do
-	"<h1>Hello World </h1>"
+	"<h1>Hello #{params[:test]}</h1>"
+end
+
+get '/route/:test/bla/:lala' do
+	"<h1>Hello there #{params[:test]}, and hello there #{params[:lala]}"
 end
 
 run_application

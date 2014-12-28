@@ -11,7 +11,7 @@ module Bublé
 			get_request_method(request_line)
 			parse_uri(request_line)
 			parse_header(raw_header)
-			parse_body(raw_body) if raw_body
+			parse_body(raw_body)
 		end
 
 		def get_request_method(request_line)
@@ -22,7 +22,7 @@ module Bublé
 			raw_uri = request_line.split(" ")[1]
 			parsed_uri = URI.parse(raw_uri)
 			@request_path = parsed_uri.path
-			@query_params = CGI.parse parsed_uri.query if parsed_uri.query
+			@query_params = (parsed_uri.query) ? CGI.parse(parsed_uri.query) : {}
 		end
 
 		def parse_header(string)
@@ -33,14 +33,31 @@ module Bublé
 		end
 
 		def parse_body(string)
-			@params = JSON.parse(string)
+			return @body_params = {} if !string
+			@body_params = JSON.parse(string)
 			rescue 
-				@params = CGI.parse(string)
+				@body_params = CGI.parse(string)
+		end
+
+		def parse_route_params
+
+			@route_params ||= {}
+
+			if @handler[:route_params_regex]
+				route_param_key = /:\w+/.match(@handler[:path])[0].delete(":")
+
+				route_param_value = @handler[:route_params_regex].match(request_path).captures[0]
+
+				@route_params[route_param_key.to_sym] = route_param_value
+
+
+			end
 		end
 
 		def params
-			query_params ? @params.merge(query_params) : @params
+			@params = @body_params.merge(@query_params).merge(@route_params)
 		end
+
 
 	end
 
