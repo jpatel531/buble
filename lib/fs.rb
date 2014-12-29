@@ -54,7 +54,7 @@ module Bublé
 					file
 				end
 			else
-				return four_oh_four
+				return ::Error.code(404)
 			end
 
 

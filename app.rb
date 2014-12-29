@@ -4,9 +4,17 @@ get '/' do
 	html :index
 end
 
+get '/404' do
+	html :nonexistent
+end
+
 get '/erb' do
 	@test = "Instance variable!"
 	erb :embedded
+end
+
+get '/json' do
+	{success:200}.to_json
 end
 
 get '/query_test' do 
