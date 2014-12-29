@@ -4,6 +4,11 @@ get '/' do
 	html :index
 end
 
+get '/erb' do
+	@test = "Instance variable!"
+	erb :embedded
+end
+
 get '/query_test' do 
 	params.inspect
 end

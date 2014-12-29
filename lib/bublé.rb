@@ -14,7 +14,7 @@ module Bublé
 	include Bublé::Response
 	include Bublé::ErrorHandler
 
-	attr_accessor :params
+	attr_reader :params
 
 	def run_application
 		server = TCPServer.new 'localhost', 5678

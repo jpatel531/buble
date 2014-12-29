@@ -36,9 +36,7 @@ module Bublé
 
 				@route_params_regex = Regexp.new(regex_string)
 				@route_params_names = route_params.map {|param| param.delete(":")}
-
 			end
 		end
-
 	end
 end

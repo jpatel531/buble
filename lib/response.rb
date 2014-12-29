@@ -1,3 +1,5 @@
+require 'erb'
+
 module Bublé
 	module Response
 
@@ -31,21 +33,35 @@ module Bublé
 			File.join(WEB_ROOT, *clean)
 		end
 
-		def html(path)
-			path = requested_file(path.to_s + ".html")
+		def send_file type, path
+			path = requested_file(path.to_s + "." + type.to_s)
+
 			if File.exist?(path) && !File.directory?(path)
 				File.open(path, "rb") do |file|
+					case type
+					when :html
+						file = IO.read(file)
+					when :erb
+						file = ERB.new(IO.read(file)).result
+					end
+
 					return  "HTTP/1.1 200 OK\r\n" +
-					"Content-Type: #{content_type(file)}\r\n" +
+					"Content-Type: text/html\r\n" +
 					"Content-Length: #{file.size}\r\n" +
 					"Connection: close\r\n" + 
 					"\r\n" +
-					IO.read(file)
+					file
 				end
 			else
 				return four_oh_four
 			end
+
+
 		end
+
+		def erb(path) ; send_file :erb, path ; end
+
+		def html(path) ; send_file :html, path ; end
 
 	end
 end

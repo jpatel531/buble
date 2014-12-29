@@ -1,11 +1,9 @@
 module Bublé
-
 	class Request
 
 		class << self
 
 			def parse(request, request_line)
-
 				raw_header, raw_body = request
 
 				request_method = get_request_method(request_line)
