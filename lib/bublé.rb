@@ -49,7 +49,6 @@ module Bublé
 				socket.print ::Error.code(500)
 				socket.close
 			end
-
 		end
 	end
 end

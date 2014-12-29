@@ -2,15 +2,23 @@ module Bublé
 
 	class Error
 
+		@@errors = [
+			{
+				code: 404,
+				headline: "404 Not Found",
+				message: "File not found\n"
+			},
+			{
+				code: 500,
+				headline: "500 Internal Server Error",
+				message: "Internal Server Error\n"
+			}
+		]
+
 		def self.code(number)
-			case number
-			when 404
-				headline = "404 Not Found"
-				message = "File not found\n"
-			when 500
-				headline = "500 Internal Server Error"
-				message = "Internal Server Error\n"
-			end
+			
+			error = @@errors.find {|error| error[:code] == number}
+			headline, message = error[:headline], error[:message]
 
 			return "HTTP/1.1 #{headline}\r\n" +
 				"Content-Type text/plain\r\n" +
