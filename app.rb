@@ -33,4 +33,4 @@ get '/route/:test/bla/:lala' do
 	"<h1>Hello there #{params[:test]}, and hello there #{params[:lala]}"
 end
 
-Bublé::Application.new.serve
+run Bublé::Application
