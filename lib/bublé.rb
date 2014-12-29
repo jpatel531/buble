@@ -13,44 +13,45 @@ module Bublé
 	include Bublé::RouteRegistry
 	include Bublé::FS
 
-	attr_reader :params
+	class Application
 
-	def run_application
-		server = TCPServer.new 'localhost', 5678
-		puts "Michael Bublé is recording another Christmas album on port 5678..."
+		attr_reader :server, :params
 
-		loop do
-			begin
-				socket = server.accept
+		def initialize host='localhost', port=5678
+			@server = TCPServer.new host, port
+		end
 
-				request_line = socket.gets
+		def serve
+			STDOUT.puts "Michael Bublé is recording another Christmas album on port 5678..."
+			loop do
+				begin
+					socket = server.accept
+					request_line = socket.gets
+					next if !request_line
+					STDERR.puts request_line
+					socket_data = socket.readpartial(1024).split("\r\n\r\n")
 
-				next if !request_line
-				
-				STDERR.puts request_line
+					request = ::Request.parse(socket_data, request_line)
+					route_handler = ::Route.handler(request)
 
-				socket_data = socket.readpartial(1024).split("\r\n\r\n")
+					if route_handler
+						@params = request.params(route_handler)
+						socket.print instance_eval(&route_handler.action)
+					else
+						socket.print ::Error.code(404)
+					end
 
-				request = ::Request.parse(socket_data, request_line)
+					socket.close
 
-				route_handler = ::Route.handler(request)
-
-				if route_handler
-					@params = request.params(route_handler)
-					socket.print(route_handler.action.call)
-				else
-					socket.print ::Error.code(404)
+				rescue Exception => e
+					puts e
+					socket.print ::Error.code(500)
+					socket.close
 				end
-
-				socket.close
-
-			rescue Exception => e
-				puts e
-				socket.print ::Error.code(500)
-				socket.close
 			end
 		end
 	end
+	
 end
 
 include Bublé
