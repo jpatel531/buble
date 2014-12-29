@@ -1,9 +1,9 @@
 module Bublé
 
-	module ErrorHandler
+	class Error
 
-		def error code
-			case code
+		def self.code(number)
+			case number
 			when 404
 				headline = "404 Not Found"
 				message = "File not found\n"

@@ -5,6 +5,7 @@ get '/' do
 end
 
 get '/erb' do
+	dsfds
 	@test = "Instance variable!"
 	erb :embedded
 end

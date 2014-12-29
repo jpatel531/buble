@@ -4,7 +4,7 @@ require 'cgi'
 require 'json'
 require_relative 'route_registry'
 require_relative 'fs'
-require_relative 'error_handler'
+require_relative 'error'
 require_relative 'request'
 require_relative 'route'
 
@@ -12,7 +12,6 @@ module Bublé
 
 	include Bublé::RouteRegistry
 	include Bublé::FS
-	include Bublé::ErrorHandler
 
 	attr_reader :params
 
@@ -40,14 +39,14 @@ module Bublé
 					@params = request.params(route_handler)
 					socket.print(route_handler.action.call)
 				else
-					socket.print(error(404))
+					socket.print ::Error.code(404)
 				end
 
 				socket.close
 
 			rescue Exception => e
 				puts e
-				socket.print(error(500))
+				socket.print ::Error.code(500)
 				socket.close
 			end
 
