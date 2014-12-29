@@ -15,6 +15,7 @@ Clone this repo.
 * Handle 'GET' and 'POST' requests
 * Render JSON, HTML and ERB
 * Parse JSON and form params, query strings and route params
+* It is multi-threaded
 
 ##To Do
 
