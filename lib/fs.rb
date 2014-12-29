@@ -1,7 +1,7 @@
 require 'erb'
 
 module Bublé
-	module Response
+	module FS
 
 		WEB_ROOT = './public'
 

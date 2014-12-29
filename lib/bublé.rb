@@ -3,7 +3,7 @@ require 'uri'
 require 'cgi'
 require 'json'
 require_relative 'route_registry'
-require_relative 'response'
+require_relative 'fs'
 require_relative 'error_handler'
 require_relative 'request'
 require_relative 'route'
@@ -11,7 +11,7 @@ require_relative 'route'
 module Bublé
 
 	include Bublé::RouteRegistry
-	include Bublé::Response
+	include Bublé::FS
 	include Bublé::ErrorHandler
 
 	attr_reader :params
