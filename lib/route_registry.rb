@@ -1,5 +1,5 @@
 module Bublé
-	module RouteRegister
+	module RouteRegistry
 
 		def get(path, &block) 
 			::Route.new('GET', path, &block)

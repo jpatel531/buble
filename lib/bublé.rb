@@ -2,7 +2,7 @@ require 'socket'
 require 'uri'
 require 'cgi'
 require 'json'
-require_relative 'route_register'
+require_relative 'route_registry'
 require_relative 'response'
 require_relative 'error_handler'
 require_relative 'request'
@@ -10,7 +10,7 @@ require_relative 'route'
 
 module Bublé
 
-	include Bublé::RouteRegister
+	include Bublé::RouteRegistry
 	include Bublé::Response
 	include Bublé::ErrorHandler
 
@@ -26,6 +26,8 @@ module Bublé
 			request_line = socket.gets
 
 			next if !request_line
+			
+			STDERR.puts request_line
 
 			socket_data = socket.readpartial(1024).split("\r\n\r\n")
 
@@ -33,11 +35,12 @@ module Bublé
 
 			route_handler = ::Route.handler(request)
 
-			STDERR.puts request_line
-
-			@params = request.params(route_handler)
-
-			route_handler ? socket.print(route_handler.action.call) : socket.print(four_oh_four)
+			if route_handler
+				@params = request.params(route_handler)
+				socket.print(route_handler.action.call)
+			else
+				socket.print(four_oh_four)
+			end
 
 			socket.close
 

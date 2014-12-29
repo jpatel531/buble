@@ -16,6 +16,7 @@ module Bublé
 
 		def content_type(path)
 			ext = File.extname(path).split(".").last
+			ext = "html" if ext == "erb"
 			CONTENT_TYPE_MAPPING.fetch(ext.to_sym, DEFAULT_CONTENT_TYPE)
 		end
 
@@ -46,7 +47,7 @@ module Bublé
 					end
 
 					return  "HTTP/1.1 200 OK\r\n" +
-					"Content-Type: text/html\r\n" +
+					"Content-Type: #{content_type(path)}\r\n" +
 					"Content-Length: #{file.size}\r\n" +
 					"Connection: close\r\n" + 
 					"\r\n" +
