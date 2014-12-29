@@ -10,13 +10,14 @@ Clone this repo.
 
     Michael Bublé is recording another Christmas album on port 5678...
 
-Open up your browser and go onto localhost:5678, and you should find the words: "Hello Me!".
+##What It Can Do
 
-If you send a POST request to `/test`, you should get `{success:200}`
+* Handle 'GET' and 'POST' requests
+* Render JSON, HTML and ERB
+* Parse JSON and form params, query strings and route params
 
 ##To Do
 
-* Implement params
 * Implement appropriate error handlers
 * Implement more HTTP methods
 * Reimplement request loop with GServer
