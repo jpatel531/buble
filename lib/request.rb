@@ -43,10 +43,10 @@ module Bublé
 
 			@route_params = {}
 
-			if @handler[:route_params_regex]
-				param_matches = request_path.scan(@handler[:route_params_regex]).flatten
+			if route_handler[:route_params_regex]
+				param_matches = request_path.scan(route_handler[:route_params_regex]).flatten
 				
-				@handler[:route_params_names].each_with_index do |name, index|
+				route_handler[:route_params_names].each_with_index do |name, index|
 					@route_params[name.to_sym] = param_matches[index]
 				end
 			end

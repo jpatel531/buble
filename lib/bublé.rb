@@ -27,29 +27,17 @@ module Bublé
 
 			request = socket.readpartial(1024).split("\r\n\r\n")
 
-
 			parse(request, request_line)
 
 			STDERR.puts request_line
 
-			handler = @handler = @routes.find do |route| 
-
-				route[:method] == request_method && 
-				(route[:path] == request_path ||
-
-					route[:route_params_regex] &&
-					route[:path].split("/").length == request_path.split("/").length &&
-					(route[:route_params_regex] =~ request_path)
-
-				)
-			end
-
 			parse_route_params
 
-			handler ? socket.print(handler[:action].call) : socket.print(four_oh_four)
-
+			route_handler ? socket.print(route_handler[:action].call) : socket.print(four_oh_four)
 
 			socket.close
+
+			@route_handler = nil
 
 		end		
 	end
