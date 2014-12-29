@@ -37,14 +37,24 @@ module Bublé
 			routes << route
 		end
 
-		def route_handler
-			@route_handler ||= routes.find do |route| 
-				route[:method] == request_method && (route[:path] == request_path ||
-					route[:route_params_regex] &&
-					route[:path].split("/").length == request_path.split("/").length &&
-					(route[:route_params_regex] =~ request_path))
+		# class << self
+
+			def route_handler(request)
+
+				@route_handler ||= routes.find do |route| 
+					route[:method] == request.http_method && (route[:path] == request.path ||
+						route[:route_params_regex] &&
+						route[:path].split("/").length == request.path.split("/").length &&
+						(route[:route_params_regex] =~ request.path))
+				end
+
+				puts @route_handler.inspect
+
+				request.parse_route_params(@route_handler) unless request.route_params
+
 			end
-		end
+
+		# end
 
 	end
 end

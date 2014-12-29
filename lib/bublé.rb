@@ -12,7 +12,7 @@ module Bublé
 	include Bublé::RouteRegister
 	include Bublé::Response
 	include Bublé::ErrorHandler
-	include Bublé::Request
+	# include Bublé::Request
 
 	def run_application
 		server = TCPServer.new 'localhost', 5678
@@ -25,13 +25,16 @@ module Bublé
 
 			next if !request_line
 
-			request = socket.readpartial(1024).split("\r\n\r\n")
+			socket_data = socket.readpartial(1024).split("\r\n\r\n")
 
-			parse(request, request_line)
+			request = ::Request.parse(socket_data, request_line)
+
+			puts request.inspect
+
+			route_handler = ::RouteRegister.route_handler(request)
 
 			STDERR.puts request_line
 
-			parse_route_params
 
 			route_handler ? socket.print(route_handler[:action].call) : socket.print(four_oh_four)
 
