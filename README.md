@@ -18,8 +18,9 @@ Clone this repo.
 
 ##To Do
 
-* Implement appropriate error handlers
 * Implement more HTTP methods
+* Implement sessions
+* Implement BasicAuth
 * Reimplement request loop with GServer
 * Make port and directories configurable
 * And many others
