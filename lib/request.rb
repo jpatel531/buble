@@ -27,7 +27,6 @@ module Bublé
 				query_params = (parsed_uri.query) ? CGI.parse(parsed_uri.query) : {}
 
 				[request_path, query_params]
-
 			end
 
 			def parse_header(string)
@@ -46,28 +45,28 @@ module Bublé
 
 		end
 
-		attr_accessor :http_method, :request_path, :query_params, :header, :body, :route_params, :params
+		attr_accessor :http_method, :path, :query_params, :header, :body_params, :route_params, :params
 
 		def initialize http_method, path, query_params, header, body_params
 			@http_method, @path, @query_params, @header, @body_params = http_method, path, query_params, header, body_params 
 		end
 
-		def params
+		def params(route_handler)
+			parse_route_params(route_handler)
 			@params = body_params.merge(query_params).merge(route_params)
 		end
 
 		def parse_route_params(route_handler)
+			@route_params = {}
 
-			route_params = {}
+			if route_handler.route_params_regex
+				param_matches = path.scan(route_handler.route_params_regex).flatten
 
-			if route_handler[:route_params_regex]
-				param_matches = path.scan(route_handler[:route_params_regex]).flatten
-
-				route_handler[:route_params_names].each_with_index do |name, index|
-					route_params[name.to_sym] = param_matches[index]
+				route_handler.route_params_names.each_with_index do |name, index|
+					@route_params[name.to_sym] = param_matches[index]
 				end
 			end
-			route_params
+			@route_params
 		end
 
 	end

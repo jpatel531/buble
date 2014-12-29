@@ -6,13 +6,15 @@ require_relative 'route_register'
 require_relative 'response'
 require_relative 'error_handler'
 require_relative 'request'
+require_relative 'route'
 
 module Bublé
 
 	include Bublé::RouteRegister
 	include Bublé::Response
 	include Bublé::ErrorHandler
-	# include Bublé::Request
+
+	attr_accessor :params
 
 	def run_application
 		server = TCPServer.new 'localhost', 5678
@@ -29,18 +31,15 @@ module Bublé
 
 			request = ::Request.parse(socket_data, request_line)
 
-			puts request.inspect
-
-			route_handler = ::RouteRegister.route_handler(request)
+			route_handler = ::Route.handler(request)
 
 			STDERR.puts request_line
 
+			@params = request.params(route_handler)
 
-			route_handler ? socket.print(route_handler[:action].call) : socket.print(four_oh_four)
+			route_handler ? socket.print(route_handler.action.call) : socket.print(four_oh_four)
 
 			socket.close
-
-			@route_handler = nil
 
 		end		
 	end
