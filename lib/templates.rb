@@ -2,7 +2,7 @@ require 'erb'
 require 'haml'
 
 module Bublé
-	module FS
+	module Templates
 
 		def erb(path) 
 			::Template.render(:erb, path)

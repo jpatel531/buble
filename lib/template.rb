@@ -15,7 +15,6 @@ module Bublé
 			DEFAULT_CONTENT_TYPE = 'application/octet-stream'
 
 			def render(type, path)
-
 				path = requested_file(path.to_s + "." + type.to_s)
 
 				if exists?(path)
@@ -33,13 +32,14 @@ module Bublé
 			end
 
 			def read(file, type)
+				file = IO.read(file)
 				case type
 				when :html
-					IO.read(file)
+					file
 				when :erb
-					ERB.new(IO.read(file)).result
+					ERB.new(file).result
 				when :haml
-					Haml::Engine.new(IO.read(file)).render
+					Haml::Engine.new(file).render
 				end
 			end
 
