@@ -13,6 +13,10 @@ get '/erb' do
 	erb :embedded
 end
 
+get '/haml' do
+	haml :haml
+end
+
 get '/json' do
 	{success:200}.to_json
 end

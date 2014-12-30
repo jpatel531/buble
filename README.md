@@ -13,7 +13,7 @@ Clone this repo.
 ##What It Can Do
 
 * Handle 'GET' and 'POST' requests
-* Render JSON, HTML and ERB
+* Render JSON, HTML, HAML and ERB
 * Parse JSON and form params, query strings and route params
 * It is multi-threaded
 

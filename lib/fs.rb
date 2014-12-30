@@ -1,4 +1,5 @@
 require 'erb'
+require 'haml'
 
 module Bublé
 	module FS
@@ -9,6 +10,10 @@ module Bublé
 
 		def html(path)
 			::Template.render(:html, path)
+		end
+
+		def haml(path)
+			::Template.render(:haml, path)
 		end
 
 	end

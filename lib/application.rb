@@ -30,6 +30,7 @@ module Bublé
 						socket.close
 
 					rescue Exception => e
+						puts e.message
 						puts e.backtrace
 						socket.print ::Error.code(500)
 						socket.close

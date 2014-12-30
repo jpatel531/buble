@@ -38,6 +38,8 @@ module Bublé
 					IO.read(file)
 				when :erb
 					ERB.new(IO.read(file)).result
+				when :haml
+					Haml::Engine.new(IO.read(file)).render
 				end
 			end
 
@@ -49,9 +51,13 @@ module Bublé
 				"\r\n"
 			end
 
+			def compiles_to_html(ext)
+				["erb", "haml"].include? ext
+			end
+
 			def content_type(path)
 				ext = File.extname(path).split(".").last
-				ext = "html" if ext == "erb"
+				ext = "html" if compiles_to_html(ext)
 				CONTENT_TYPE_MAPPING.fetch(ext.to_sym, DEFAULT_CONTENT_TYPE)
 			end
 
