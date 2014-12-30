@@ -64,7 +64,6 @@ module Bublé
 					@route_params[name.to_sym] = param_matches[index]
 				end
 			end
-			@route_params
 		end
 
 	end

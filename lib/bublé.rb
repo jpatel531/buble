@@ -8,6 +8,7 @@ require_relative 'error'
 require_relative 'request'
 require_relative 'route'
 require_relative 'application'
+require_relative 'template'
 
 module Bublé
 
