@@ -56,8 +56,6 @@ module Bublé
 			else
 				return ::Error.code(404)
 			end
-
-
 		end
 
 		def erb(path) ; send_file :erb, path ; end

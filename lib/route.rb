@@ -25,17 +25,15 @@ module Bublé
 		end
 
 		def set_route_params
-			if path =~ /:\w+/
-				route_params = path.scan(/:\w+/)
+			if (param_matches = path.scan(/:\w+/)).any?
 
-				positions = route_params.map {|param| path.split("/").index(param)}
+				positions = param_matches.map {|param| path.split("/").index(param)}
 
 				regex_string = path
-
-				route_params.each { |param| regex_string.gsub!(param, '(\w+)') }
+				param_matches.each { |param| regex_string.gsub!(param, '(\w+)') }
 
 				@route_params_regex = Regexp.new(regex_string)
-				@route_params_names = route_params.map {|param| param.delete(":")}
+				@route_params_names = param_matches.map {|param| param.delete(":")}
 			end
 		end
 	end

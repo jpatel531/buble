@@ -36,9 +36,9 @@ module Bublé
 
 			def parse_body(string)
 				return {} if !string
-				body_params = JSON.parse(string)
+				JSON.parse(string)
 				rescue 
-					body_params = CGI.parse(string)
+					CGI.parse(string)
 			end
 
 		end
